@@ -1,0 +1,17 @@
+# 敏感配置文件
+config.yaml
+
+# Go 编译生成的二进制文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/mini-greenbook
+
+# GoLand / IDE 自动生成的缓存目录
+.idea/
+.vscode/
+
+# 各种日志文件
+*.log
