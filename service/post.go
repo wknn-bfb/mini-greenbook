@@ -58,8 +58,10 @@ func CreatePost(userID uint, title, content, imageURL string, tags string) error
 //   - 防击穿：Singleflight 保证同一游标位置的并发请求只查一次 MySQL
 //   - 防雪崩：缓存过期时间加随机抖动，避免同时失效
 func GetPostList(cursor uint, size int) ([]model.Post, uint, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 800*time.Millisecond)
+	defer cancel()
+
 	cacheKey := fmt.Sprintf("posts:cursor:%d:size:%d", cursor, size)
-	ctx := context.Background()
 
 	// 第一页：跳过缓存，直接查 MySQL
 	if cursor == 0 {

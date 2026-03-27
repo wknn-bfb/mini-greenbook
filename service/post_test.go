@@ -109,3 +109,24 @@ func TestToggleLike_CancelLike(t *testing.T) {
 		Count(&count)
 	assert.Equal(t, int64(0), count, "取消点赞后中间表应该没有记录")
 }
+
+func BenchmarkGetPostList(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		GetPostList(0, 10)
+	}
+}
+
+func BenchmarkToggleLike(b *testing.B) {
+	// 先创建一个帖子
+	post := model.Post{Title: "bench帖", Content: "内容", UserID: 1}
+	config.DB.Create(&post)
+	defer func() {
+		config.DB.Exec("DELETE FROM user_like_posts WHERE post_id = ?", post.ID)
+		config.DB.Unscoped().Delete(&post)
+	}()
+
+	b.ResetTimer() // 不把准备工作计入 benchmark 时间
+	for i := 0; i < b.N; i++ {
+		ToggleLike(1, post.ID)
+	}
+}
